@@ -1,8 +1,6 @@
 """
 Library for download and perform operations on images on Reddit.com
 """
-import urllib
-import shutil
 import json
 from os import mknod, path
 import itertools
@@ -33,7 +31,7 @@ def _loop():
         traceback.print_exc()
         raise
 
-class ImageOps:
+class ImageOps(object):
     """
     This class has all the functions to be used for image manipulation
     """
@@ -48,7 +46,13 @@ class ImageOps:
         This will be used as a decorator to perform retries
         """
         def wrapper(function):
+            """
+            wrapper
+            """
             def wrapped(*args, **kwargs):
+                """
+                wrapper
+                """
                 problems = []
                 for delay in itertools.chain(delays, [None]):
                     try:
@@ -71,10 +75,10 @@ class ImageOps:
             self.log.info("Trying to connect to [%s] -> fancy for google.com"%google_url)
             requests.get(google_url, timeout=10)
             return True
-        except ConnectionError:
+        except requests.ConnectionError:
             self.log.error("Connection error while connecting to google.com")
             return False
-        except Timeout:
+        except requests.Timeout:
             self.log.error("Connection timed-out while connecting to google.com")
             return False
 
@@ -82,8 +86,8 @@ class ImageOps:
         """
         Does the url contain an image
         """
-        h = requests.head(self.url, allow_redirects=True)
-        header = h.headers
+        _h = requests.head(self.url, allow_redirects=True)
+        header = _h.headers
         content_type = header.get('content-type')
         if 'text' in content_type.lower():
             return False
@@ -124,10 +128,10 @@ class ImageOps:
             self.log.info("New image found.")
         with open(image_url_file, 'w') as _fh:
             _fh.write(image_url)
-        r = requests.get(image_url)
-        if r.status_code == 200:
+        _r = requests.get(image_url)
+        if _r.status_code == 200:
             with open(path.join(_absolute_download_path, self.jpg_image), "wb") as _fh:
-                _fh.write(r.content)
+                _fh.write(_r.content)
         self.log.info("Image downloaded.")
         return image_title
 
