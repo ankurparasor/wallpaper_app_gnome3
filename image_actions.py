@@ -8,12 +8,13 @@ import time
 import traceback
 import subprocess
 import datetime
+import random
+import string
 import requests
 from Logger import Logger
 
 IMAGE_NO = 0
-MAX_IMAGE_NO = 30
-def _loop():
+def _loop_and_write_img_no(max_image_no):
     try:
         log = Logger()
         global IMAGE_NO
@@ -23,7 +24,9 @@ def _loop():
         i = int(i)
         IMAGE_NO = i
         log.info("Current image number = %s" % IMAGE_NO)
-        i = (i + 1) if i < MAX_IMAGE_NO else 0
+        log.info("Total images on the page = %s" % max_image_no)
+        # since image keys start from '0', max_image_no - 1 is the index of the last image
+        i = (i + 1) if i < (max_image_no - 1) else 0
         with open(image_number_file, 'w') as _fh:
             i = str(i)
             _fh.write(i)
@@ -69,6 +72,7 @@ class ImageOps(object):
 
     @retry_func(delays=itertools.cycle([10]))
     def internet_on(self, limit):
+        """Check if connected to the internet"""
         self.log.info("Checking internet connectivity ..")
         try:
             google_url = 'http://216.58.192.142'
@@ -100,21 +104,26 @@ class ImageOps(object):
         Download the image.
         """
         global IMAGE_NO
-        _loop()
         image_url_file = path.join(path.dirname(path.realpath(__file__)), 'image_url.txt')
         retries = 5
         _n = 0
+        # while the response is not expected json, loop till max 'retries'
         while _n < retries:
             self.log.info("Opening url: [%s]"%self.url)
-            response = requests.get(self.url)
+            random_string = ''.join([random.choice(
+                string.ascii_letters + string.digits
+                ) for n in xrange(16)])
+            headers = {'User-Agent': random_string}
+            response = requests.get(self.url, headers=headers)
             rawdata = json.loads(response.text)
-            print rawdata, "=" * 80, rawdata.keys()
             if 'data' in rawdata.keys():
                 break
-            self.log.error("Corrupted json")
+            self.log.error("Corrupted json: %s" % rawdata)
             self.log.info("Retrying after sleeping for 1 sec ...")
             time.sleep(1)
             _n = _n + 1
+        max_image_no = int(json.dumps(len(rawdata['data']['children'])))
+        _loop_and_write_img_no(max_image_no)
         image_url = rawdata['data']['children'][IMAGE_NO]['data']['url']
         image_title = rawdata['data']['children'][IMAGE_NO]['data']['title']
         self.log.info("New image url: [%s]"%image_url)

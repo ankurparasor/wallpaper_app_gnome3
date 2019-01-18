@@ -8,6 +8,7 @@ import sys
 from Logger import Logger
 from image_actions import ImageOps
 
+#URL = "https://www.reddit.com/r/MostBeautiful.json"
 URL = "https://www.reddit.com/r/EarthPorn.json"
 #URL = "https://www.reddit.com/r/MinimalWallpaper.json"
 #URL = "https://www.reddit.com/r/wallpaper+wallpapers.json"
@@ -58,8 +59,6 @@ def main():
     log.info("Wallpaper set: %s" % _downloaded_image)
     notify_title_cmd = "notify-send -i %s Wallpaper_Description \"%s\"" %(
                         path.join(path.dirname(__file__), ICON), title)
-    print notify_title_cmd
-    print "=" * 80
     subprocess_cmd(notify_title_cmd)
 
 if __name__ == '__main__':
