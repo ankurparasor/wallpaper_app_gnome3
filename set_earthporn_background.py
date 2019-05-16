@@ -6,37 +6,32 @@ import subprocess
 from os import path
 import sys
 from Logger import Logger
+from utils import utils
 from image_actions import ImageOps
 
 #URL = "https://www.reddit.com/r/MostBeautiful.json"
 URL = "https://www.reddit.com/r/EarthPorn.json"
+#URL = "https://www.reddit.com/r/itookapicture.json"
+#URL = "https://www.reddit.com/r/shootingcars.json"
+#URL = "https://www.reddit.com/r/wallpapers.json"
+#URL = "https://www.reddit.com/r/wallpaper.json"
 #URL = "https://www.reddit.com/r/MinimalWallpaper.json"
 #URL = "https://www.reddit.com/r/wallpaper+wallpapers.json"
-#URL = "https://www.reddit.com/r/wallpapers.json"
 #URL = "https://www.reddit.com/r/iWallpaper.json"
 #URL = "https://www.reddit.com/r/WQHD_Wallpaper.json"
+#URL = "https://www.reddit.com/r/topwalls.json"
+#URL = "https://www.reddit.com/r/Offensive_Wallpapers.json"
 IMAGE_NAME = "earthporn_2.jpg"
 ICON = "reddit.png"
-
-def subprocess_cmd(command):
-    """
-    Uses Python's subprocess.Popen to run commands.
-    """
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-    proc_stdout = process.communicate()[0].strip()
-    print proc_stdout
+INFO_FILE = path.join('/home','ankur','.config','wallpaper_info.txt')
 
 def arg_parser(argv):
-    """
-    Used for parsing argument passed to the script
-    """
+    """Used for parsing argument passed to the script"""
     _arg = argv[1]
     return _arg
 
 def main():
-    """
-    MAIN
-    """
+    """MAIN"""
     log = Logger()
     url = URL
     image_name = IMAGE_NAME
@@ -55,11 +50,11 @@ def main():
     _downloaded_image = path.join(_download_path, image_name)
     set_wallpaper_cmd = "gsettings set org.gnome.desktop.background " \
         "picture-uri file://%s" % _downloaded_image
-    subprocess_cmd(set_wallpaper_cmd)
+    utils.subprocess_cmd(set_wallpaper_cmd)
     log.info("Wallpaper set: %s" % _downloaded_image)
-    notify_title_cmd = "notify-send -i %s Wallpaper_Description \"%s\"" %(
-                        path.join(path.dirname(__file__), ICON), title)
-    subprocess_cmd(notify_title_cmd)
+    _displayinfo = utils.Displayinfo(title)
+    #_displayinfo.notify(path.join(path.dirname(__file__), ICON))
+    _displayinfo.write_to_file(INFO_FILE)
 
 if __name__ == '__main__':
     main()

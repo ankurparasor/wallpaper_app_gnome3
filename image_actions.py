@@ -12,6 +12,9 @@ import random
 import string
 import requests
 from Logger import Logger
+# debug
+import sys
+from pprint import pprint
 
 IMAGE_NO = 0
 def _loop_and_write_img_no(max_image_no):
@@ -53,9 +56,7 @@ class ImageOps(object):
             wrapper
             """
             def wrapped(*args, **kwargs):
-                """
-                wrapper
-                """
+                """wrapper"""
                 problems = []
                 for delay in itertools.chain(delays, [None]):
                     try:
@@ -87,9 +88,7 @@ class ImageOps(object):
             return False
 
     def is_image(self):
-        """
-        Does the url contain an image
-        """
+        """Does the url contain an image"""
         _h = requests.head(self.url, allow_redirects=True)
         header = _h.headers
         content_type = header.get('content-type')
@@ -100,9 +99,7 @@ class ImageOps(object):
         return True
 
     def download_image(self, _absolute_download_path):
-        """
-        Download the image.
-        """
+        """Download the image."""
         global IMAGE_NO
         image_url_file = path.join(path.dirname(path.realpath(__file__)), 'image_url.txt')
         retries = 5
@@ -136,8 +133,15 @@ class ImageOps(object):
             assert wallpaper_url != image_url.strip(), "Its the same image. Will skip download."
             self.log.info("New image found.")
         with open(image_url_file, 'w') as _fh:
+            self.log.info("Downloading ...")
             _fh.write(image_url)
         _r = requests.get(image_url)
+        #print("debug")
+        #pprint(_r.json)
+        #print("debug",_r.headers['content-type'],"\n")
+        #print("debug",_r.text,"\n")
+        #print("debug")
+        #sys.exit(0)
         if _r.status_code == 200:
             with open(path.join(_absolute_download_path, self.jpg_image), "wb") as _fh:
                 _fh.write(_r.content)
@@ -149,7 +153,7 @@ class ImageOps(object):
         Saves the current wallpaper by appending current date_time to its name
         """
         self.log.info("Saving image ...")
-        saved_image = '_'.join([self.jpg_image, datetime.datetime.now().strftime("%Y-%m-%d-%H_%M")])
+        saved_image = '_'.join([datetime.datetime.now().strftime("%Y-%m-%d-%H_%M"), self.jpg_image])
         commandbash = "cp %s %s" % (
             path.join(path.dirname(path.realpath(__file__)), self.jpg_image),
             path.join(path.dirname(path.realpath(__file__)), saved_image)
