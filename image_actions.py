@@ -98,6 +98,7 @@ class ImageOps(object):
             return False
         return True
 
+    @retry_func(delays=itertools.cycle([1]))
     def download_image(self, _absolute_download_path):
         """Download the image."""
         global IMAGE_NO
@@ -122,6 +123,11 @@ class ImageOps(object):
         max_image_no = int(json.dumps(len(rawdata['data']['children'])))
         _loop_and_write_img_no(max_image_no)
         image_url = rawdata['data']['children'][IMAGE_NO]['data']['url']
+        try:
+            assert image_url.endswith(('jpg', 'png', 'jpeg')), "Not an image"
+        except AssertionError as _ae:
+            self.log.info("Issue: {e}. Retrying ..".format(e=_ae))
+            raise
         image_title = rawdata['data']['children'][IMAGE_NO]['data']['title']
         self.log.info("New image url: [%s]"%image_url)
         if not path.isfile(image_url_file):
@@ -163,6 +169,6 @@ class ImageOps(object):
             proc_stdout = process.communicate()[0].strip()
             self.log.info("Result: %s" % (proc_stdout))
             if path.isfile(path.join(path.dirname(path.realpath(__file__)), saved_image)):
-                self.log.info("Image saved. Yayy!!")
+                self.log.info("Image saved as: %s" %saved_image)
         except OSError as _msg:
             self.log.error("Failed to save image: %s" % _msg)

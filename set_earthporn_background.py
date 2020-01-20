@@ -9,7 +9,9 @@ from Logger import Logger
 from utils import utils
 from image_actions import ImageOps
 
+#URL= "https://www.reddit.com/r/ComicWalls.json"
 #URL = "https://www.reddit.com/r/MostBeautiful.json"
+#URL = "https://www.reddit.com/r/DigitalArt.json"
 URL = "https://www.reddit.com/r/EarthPorn.json"
 #URL = "https://www.reddit.com/r/itookapicture.json"
 #URL = "https://www.reddit.com/r/shootingcars.json"
@@ -18,9 +20,10 @@ URL = "https://www.reddit.com/r/EarthPorn.json"
 #URL = "https://www.reddit.com/r/MinimalWallpaper.json"
 #URL = "https://www.reddit.com/r/wallpaper+wallpapers.json"
 #URL = "https://www.reddit.com/r/iWallpaper.json"
-#URL = "https://www.reddit.com/r/WQHD_Wallpaper.json"
 #URL = "https://www.reddit.com/r/topwalls.json"
 #URL = "https://www.reddit.com/r/Offensive_Wallpapers.json"
+#URL = "https://www.reddit.com/r/WQHD_Wallpaper.json"
+
 IMAGE_NAME = "earthporn_2.jpg"
 ICON = "reddit.png"
 INFO_FILE = path.join('/home','ankur','.config','wallpaper_info.txt')
